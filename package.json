@@ -1,0 +1,25 @@
+{
+  "name": "academy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Zucco",
+  "license": "MIT",
+  "scripts": {
+    "start:all": "concurrently \"nodemon users/src/index.ts\" \"nodemon grades/src/index.ts\" \"nodemon matters/src/index.ts\"",
+    "install:all": "cd users && yarn && cd .. && cd grades && yarn && cd .. && cd matters && yarn"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.32.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+},
+"dependencies": {
+    "nodemon": "^3.1.7"
+}
+
+}
