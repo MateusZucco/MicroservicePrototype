@@ -6,10 +6,10 @@ const routes = Router();
 
 routes.get("/test-single",  controller.getSingle);
 routes.get("/test-dependecy",  controller.getDependency);
-routes.get("/test-large-payload",  controller.getAll);
-routes.get("/test-large-query",  controller.getAll);
-routes.get("/test-small",  controller.getAll);
-routes.get("/test-sleeper",  controller.getAll);
+routes.get("/test-heavy-response",  controller.getHeavyResponse);
+// routes.get("/test-large-query",  controller.getAll);
+// routes.get("/test-small",  controller.getAll);
+// routes.get("/test-sleeper",  controller.getAll);
 
 
 

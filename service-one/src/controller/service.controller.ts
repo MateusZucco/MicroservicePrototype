@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import * as serviceTwo from '../service/serviceTwo.service';
+import * as serviceFour from '../service/serviceFour.service';
+import Model from '../model/serviceOne.model';
 
 export function getSingle(_req: Request, res: Response) {
-  serviceTwo
-    .getAll()
+  Model.getAll()
     .then((response: any) => {
       res.status(200).json({ data: response });
     })
@@ -12,13 +13,30 @@ export function getSingle(_req: Request, res: Response) {
     });
 }
 
-
-
 export function getDependency(_req: Request, res: Response) {
-  serviceTwo
+  Model.getAll()
+    .then((responseOne: any) => {
+      serviceTwo
+        .getAll()
+        .then((responseTwo: any) => {
+          res
+            .status(200)
+            .json({ data: [...responseOne, ...responseTwo.data.data] });
+        })
+        .catch((error: any) => {
+          throw error;
+        });
+    })
+    .catch((error: any) => {
+      res.status(400).json(error || 'Undefined error');
+    });
+}
+
+export function getHeavyResponse(_req: Request, res: Response) {
+  serviceFour
     .getAll()
     .then((response: any) => {
-      res.status(200).json({ data: response });
+      res.status(200).json({ data: response.data });
     })
     .catch((error: any) => {
       res.status(400).json(error || 'Undefined error');

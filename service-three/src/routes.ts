@@ -4,7 +4,7 @@ import * as controller from "./controller/service.controller";
 
 const routes = Router();
 
-routes.get("/all",  controller.);
+routes.get("/get-all",  controller.getAll);
 
 
 

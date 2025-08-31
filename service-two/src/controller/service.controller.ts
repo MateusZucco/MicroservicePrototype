@@ -1,11 +1,20 @@
 import { Request, Response } from 'express';
 import * as serviceThree from '../service/serviceThree.service';
+import Model from '../model/serviceTwo.model';
 
 export function getAll(_req: Request, res: Response) {
-  serviceThree
-    .getAll()
-    .then((response: any) => {
-      res.status(200).json({ data: response });
+  Model.getAll()
+    .then((responseTwo: any) => {
+      serviceThree
+        .getAll()
+        .then((responseThree: any) => {
+          console.log(responseThree.data.data);
+          
+          res.status(200).json({ data: [ ...responseTwo,...responseThree.data.data] });
+        })
+        .catch((error: any) => {
+          throw error;
+        });
     })
     .catch((error: any) => {
       res.status(400).json(error || 'Undefined error');

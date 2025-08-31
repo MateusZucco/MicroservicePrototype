@@ -4,7 +4,7 @@ const ROOT_URL = process.env.GRADES_SERVICE_URL || 'http://localhost:3003';
 
 export function getAll() {
   return axios
-    .get(ROOT_URL + `/getAll`)
+    .get(ROOT_URL + `/get-all`)
     .then((result) => {
       return result;
     })

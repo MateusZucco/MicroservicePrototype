@@ -1,5 +1,5 @@
-CREATE SCHEMA `service_one` ;
-USE `service_one`;
+CREATE SCHEMA `service_two` ;
+USE `service_two`;
 create table users (
 	id INT AUTO_INCREMENT UNIQUE,
 	first_name VARCHAR(50),
