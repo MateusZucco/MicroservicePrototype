@@ -8,11 +8,11 @@ export class Connection {
       return this.connectionStatus;
 
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || '34.29.91.84',
-      port: process.env.DB_PORT || '3306',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASS || 'r>)l#dFn,K&Uy5*O',
-      database: process.env.DB_NAME || 'service_four'
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PAS,
+      database: process.env.DB_NAME
     });
 
     await connection.connect((err: any) => {
