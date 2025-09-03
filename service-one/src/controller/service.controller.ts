@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as serviceTwo from '../service/serviceTwo.service';
 import * as serviceFour from '../service/serviceFour.service';
+import * as serviceFive from '../service/serviceFive.service';
 import Model from '../model/serviceOne.model';
 
 export function getSingle(_req: Request, res: Response) {
@@ -37,6 +38,20 @@ export function getHeavyResponse(_req: Request, res: Response) {
     .getAll()
     .then((response: any) => {
       res.status(200).json({ data: response.data });
+    })
+    .catch((error: any) => {
+      res.status(400).json(error || 'Undefined error');
+    });
+}
+
+export function testStressSimulate(_req: Request, res: Response) {
+console.log('a')
+  serviceFive
+    .simulateStress()
+    .then((ress) => {
+      console.log(ress);
+      
+      res.status(200).json({ data: 'OK' });
     })
     .catch((error: any) => {
       res.status(400).json(error || 'Undefined error');
