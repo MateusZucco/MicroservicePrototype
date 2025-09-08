@@ -1,14 +1,23 @@
 {
-  "name": "service-one",
+  "name": "service-two",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Mateus Zucco",
   "license": "MIT",
+    "config": {
+    "PROJECT_ID": "standardprototype",
+    "SERVICE_NAME": "service-two",
+    "REGION": "us-central1"
+  },
   "scripts": {
-    "build": "tsc --build",
+    "build": "rimraf ./build && tsc",
     "dev": "nodemon",
-    "start": "nodemon --watch 'dist/**' ",
-    "clean": "tsc --build --clean"
+    "start": "node build/index.js",
+    "clean": "tsc --build --clean",
+    "gcp-build": "tsc",
+    "cloud:build": "gcloud builds submit --tag %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --project %npm_package_config_PROJECT_ID%",
+    "cloud:deploy": "gcloud run deploy %npm_package_config_SERVICE_NAME% --image %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --region %npm_package_config_REGION% --allow-unauthenticated --max-instances 1  --concurrency 1 --cpu 300m  --memory 128Mi --port 8080",
+    "deploy": "yarn cloud:build && yarn cloud:deploy"
   },
   "keywords": [],
   "dependencies": {
@@ -27,6 +36,7 @@
     "@types/mysql": "^2.15.27",
     "@types/node": "^22.15.17",
     "nodemon": "^3.1.10",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

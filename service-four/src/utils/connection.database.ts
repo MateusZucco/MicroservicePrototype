@@ -7,13 +7,23 @@ export class Connection {
     if (this.connectionStatus && this.connectionStatus.state !== 'disconnected')
       return this.connectionStatus;
 
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PAS,
-      database: process.env.DB_NAME
-    });
+    let connection;
+    if (process.env.DB_SOCKET_PATH)
+      connection = await mysql.createConnection({
+        socketPath: process.env.DB_SOCKET_PATH,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME
+      });
+    else
+      connection = await mysql.createConnection({
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME
+      });
 
     await connection.connect((err: any) => {
       if (err) throw err;
@@ -21,7 +31,7 @@ export class Connection {
     });
 
     await connection.query('USE service_four;');
-    
+
     return connection;
   }
 

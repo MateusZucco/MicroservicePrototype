@@ -22,7 +22,7 @@ export function simulateStress(_req: Request, res: Response) {
     Promise.all([simulateRamStress(), simulateCPUStress()]).then(() => {
       console.log('fim');
 
-      res.status(200);
+      res.status(200).json({ data: 'OK' });
     });
   } catch (error) {
     res.status(400).json(error || 'Undefined error');

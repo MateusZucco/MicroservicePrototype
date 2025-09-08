@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const ROOT_URL = process.env.GRADES_SERVICE_URL || 'http://localhost:3004';
+const ROOT_URL = process.env.SERVICE_FOUR_URL || 'http://localhost:3004';
 
 export function getAll() {
   return axios
