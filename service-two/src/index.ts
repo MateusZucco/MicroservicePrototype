@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import router from './routes';
 import morgan from 'morgan';
 
+import { createClient } from 'redis';
+
 // Carrega variáveis de ambiente
 dotenv.config();
 
@@ -26,6 +28,17 @@ app.use(
 app.use(router);
 
 const PORT = process.env.PORT || 3002;
-app.listen(PORT, () => {
-  console.log(`Service Two rodando na porta ${PORT}`);
-})
+
+const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
+const startup = async () => {
+  await cacheClient.connect();
+  await cacheClient.FLUSHALL();
+  await cacheClient.FLUSHDB();
+  app.listen(PORT, () => {
+    console.log(`Service One rodando na porta ${PORT}`);
+  });
+};
+
+startup();
+
+export { cacheClient };
