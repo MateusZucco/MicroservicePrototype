@@ -1,8 +1,8 @@
 {
-    "watch": ["src"],
+    "watch": ["server"],
     "ext": "ts,json",
-    "ignore": ["src/**/*.spec.ts"],
-    "exec": "ts-node ./src/index.ts",
+    "ignore": ["server/**/*.spec.ts"],
+    "exec": "ts-node ./server/index.ts",
     "env": {
       "__DEV__": "true",
       "NODE_ENV": "development"

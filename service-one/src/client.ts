@@ -1,0 +1,10 @@
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import path from 'path';
+
+const protoObject = protoLoader.loadSync(__dirname + '/usersTwo.proto')
+const userProto = grpc.loadPackageDefinition(protoObject).users as any;
+
+const client = new userProto.Users(process.env.SERVICE_TWO_URL?.toString() || 'localhost:3002', grpc.credentials.createSsl())
+
+export default client
