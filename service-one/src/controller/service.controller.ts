@@ -3,7 +3,8 @@ import * as serviceTwo from '../service/serviceTwo.service';
 import * as serviceFour from '../service/serviceFour.service';
 import * as serviceFive from '../service/serviceFive.service';
 import Model from '../model/serviceOne.model';
-import GrpcClient from '../client';
+import GrpcClientTwo from '../clientTwo';
+import GrpcClientFour from '../clientFour';
 
 export function getSingle(_req: Request, res: Response) {
   Model.getAll()
@@ -18,7 +19,7 @@ export function getSingle(_req: Request, res: Response) {
 export function getDependency(_req: Request, res: Response) {
   Model.getAll()
     .then((responseOne: any) => {
-      GrpcClient.GetUsers(
+      GrpcClientTwo.GetUsers(
         {},
         (err: any, { user: usersTwo }: { user: Array<{}> }) => {
           if (err) throw err;
@@ -33,14 +34,18 @@ export function getDependency(_req: Request, res: Response) {
 }
 
 export function getHeavyResponse(_req: Request, res: Response) {
-  serviceFour
-    .getAll()
-    .then((response: any) => {
-      res.status(200).json({ data: response.data });
-    })
-    .catch((error: any) => {
-      res.status(400).json(error || 'Undefined error');
+  try {
+    GrpcClientFour.GetUsers({}, (err: any, response: any) => {
+      if (err) throw err;
+      const {
+        user,
+        accessHistoric
+      }: { user: Array<{}>; accessHistoric: Array<{}> } = response;
+      res.status(200).json({ data: { user, accessHistoric } });
     });
+  } catch (error) {
+    res.status(400).json(error || 'Undefined error');
+  }
 }
 
 export function testStressSimulate(_req: Request, res: Response) {

@@ -1,31 +1,47 @@
-import express, {Request} from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import serviceFour from './model/serviceFour.model';
 
-import router from './routes';
-import morgan from 'morgan';
+const PROTO_PATH = __dirname + '/usersFour.proto';
 
-// Carrega variáveis de ambiente
-dotenv.config();
+const proto = protoLoader.loadSync(PROTO_PATH, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+});
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const userProto = grpc.loadPackageDefinition(proto).users as any;
+const server = new grpc.Server();
 
-
-morgan.token('body', (req: Request) => JSON.stringify(req.body));
-morgan.token('query', (req: Request) => JSON.stringify(req.query));
-
-// Use o Morgan SEM a opção "immediate: true"
-app.use(
-  morgan(
-    ':date[iso] | :method :url | Status: :status | Tempo: :response-time ms | Tamanho: :res[content-length] B'
-  )
-);
-// Rotas
-app.use(router);
+server.addService(userProto.Users.service, {
+  GetUsers: async (call: any, callback: any) => {
+    try {
+      const users:any = await serviceFour.getAll(); 
+      console.log(users[0][0][1]);
+      console.log(users[1][0][1]);
+      callback(null, { user: users[0][0], accessHistoric: users[1][0]  });
+    } catch (error) {
+      callback(error, null);
+    }
+  }
+});
 
 const PORT = process.env.PORT || 3004;
-app.listen(PORT, () => {
-  console.log(`Service Four rodando na porta ${PORT}`);
-});
+
+server.bindAsync(
+  `0.0.0.0:${PORT}`,
+  grpc.ServerCredentials.createInsecure(),
+  (error: any, port: number) => {
+    // 1. Verifique se ocorreu um erro ao vincular a porta
+    if (error) {
+      console.error('Falha ao iniciar o servidor:', error);
+      return;
+    }
+
+    // 2. Se não houve erro, inicie o servidor
+    console.log(`Service Four rodando na porta localhost:${port}`);
+    //   server.start();
+  }
+);

@@ -5,7 +5,7 @@
  COPY src src
  RUN yarn install
  ADD . .
-EXPOSE $PORT
+ EXPOSE $PORT
  RUN yarn gcp-build
 
  FROM dependencies

@@ -22,7 +22,7 @@ server.addService(userProto.Users.service, {
       const usersTwo = await serviceTwo.getAll();
       GrpcClient.GetUsers({}, (err: any, response: any) => {
         if (err) {
-          console.error('gRPC call failed:', err);
+          console.error(err);
           throw err;
         }
 
