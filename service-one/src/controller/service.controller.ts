@@ -24,7 +24,7 @@ export function getDependency(_req: Request, res: Response) {
         (err: any, { user: usersTwo }: { user: Array<{}> }) => {
           if (err) throw err;
           console.log(usersTwo.length);
-          res.status(200).json({ data: [...responseOne, ...usersTwo] });
+          res.status(200).json({ data: [responseOne, usersTwo] });
         }
       );
     })
