@@ -23,7 +23,6 @@ export function getDependency(_req: Request, res: Response) {
         {},
         (err: any, { user: usersTwo }: { user: Array<{}> }) => {
           if (err) throw err;
-          console.log(usersTwo.length);
           res.status(200).json({ data: [responseOne, usersTwo] });
         }
       );
@@ -49,12 +48,9 @@ export function getHeavyResponse(_req: Request, res: Response) {
 }
 
 export function testStressSimulate(_req: Request, res: Response) {
-  console.log('a');
   serviceFive
     .simulateStress()
     .then((ress) => {
-      console.log(ress);
-
       res.status(200).json({ data: 'OK' });
     })
     .catch((error: any) => {

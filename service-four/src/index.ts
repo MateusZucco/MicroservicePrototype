@@ -19,8 +19,6 @@ server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
       const users:any = await serviceFour.getAll(); 
-      console.log(users[0][0][1]);
-      console.log(users[1][0][1]);
       callback(null, { user: users[0][0], accessHistoric: users[1][0]  });
     } catch (error) {
       callback(error, null);

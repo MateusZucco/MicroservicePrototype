@@ -19,7 +19,6 @@ server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
       const users = await serviceTwo.getAll(); 
-      console.log(typeof users);
       callback(null, { user: users });
     } catch (error) {
       callback(error, null);
