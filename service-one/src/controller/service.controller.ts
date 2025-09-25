@@ -77,7 +77,6 @@ export function testStressSimulate(_req: Request, res: Response) {
   serviceFive
     .simulateStress()
     .then((ress) => {
-      console.log(ress);
 
       res.status(200).json({ data: 'OK' });
     })
