@@ -45,12 +45,9 @@ export function getHeavyResponse(_req: Request, res: Response) {
 }
 
 export function testStressSimulate(_req: Request, res: Response) {
-console.log('a')
   serviceFive
     .simulateStress()
     .then((ress) => {
-      console.log(ress);
-      
       res.status(200).json({ data: 'OK' });
     })
     .catch((error: any) => {
