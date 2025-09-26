@@ -7,7 +7,7 @@ const routes = Router();
 routes.get("/test-single",  controller.getSingle);
 routes.get("/test-dependecy",  controller.getDependency);
 routes.get("/test-heavy-response",  controller.getHeavyResponse);
-routes.get("/test-stress",  controller.testStressSimulate);
+// routes.get("/test-stress",  controller.testStressSimulate);
 
 
 
