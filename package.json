@@ -11,15 +11,18 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.32.0",
     "@typescript-eslint/parser": "^8.32.0",
+    "autocannon": "^8.0.0",
+    "chart.js": "^4.5.0",
+    "chartjs-node-canvas": "^5.0.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "concurrently": "^9.1.0",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-},
-"dependencies": {
+  },
+  "dependencies": {
     "nodemon": "^3.1.7"
-}
-
+  }
 }
