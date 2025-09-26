@@ -11,3 +11,5 @@ package-lock.json
 latency-test.js
 result-graph.js
 results.json
+resultsGrpc.json
+resultsRedis.json

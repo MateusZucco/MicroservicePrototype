@@ -17,7 +17,7 @@
     "clean": "tsc --build --clean",
     "gcp-build": "tsc && yarn copy-assets",
     "cloud:build": "gcloud builds submit --tag %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --project %npm_package_config_PROJECT_ID%",
-    "cloud:deploy": "gcloud run deploy %npm_package_config_SERVICE_NAME% --image %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --region %npm_package_config_REGION% --allow-unauthenticated --max-instances 1 --concurrency 12 --cpu 1 --memory 128Mi --port 3002",
+    "cloud:deploy": "gcloud run deploy %npm_package_config_SERVICE_NAME% --image %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --region %npm_package_config_REGION% --allow-unauthenticated --max-instances 1 --concurrency 12 --cpu 1 --memory 128Mi --use-http2 --port 3002",
     "deploy": "yarn cloud:build && yarn cloud:deploy"
   },
   "keywords": [],
