@@ -8,7 +8,6 @@ export function getAll(_req: Request, res: Response) {
       serviceThree
         .getAll()
         .then((responseThree: any) => {
-          console.log(responseThree.data.data);
           
           res.status(200).json({ data: [ ...responseTwo,...responseThree.data.data] });
         })

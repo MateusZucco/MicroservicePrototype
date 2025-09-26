@@ -6,7 +6,9 @@ yarn.lock
 
 package-lock.json
 */package-lock.json
-
 latency-test.js
-result-graph.js
+.gitignore
 results.json
+resultsRedis.json
+resultsGrpc.json
+result-graph.js
