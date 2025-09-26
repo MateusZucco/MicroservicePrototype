@@ -73,14 +73,14 @@ export function getHeavyResponse(_req: Request, res: Response) {
     });
 }
 
-export function testStressSimulate(_req: Request, res: Response) {
-  serviceFive
-    .simulateStress()
-    .then((ress) => {
+// export function testStressSimulate(_req: Request, res: Response) {
+//   serviceFive
+//     .simulateStress()
+//     .then((ress) => {
 
-      res.status(200).json({ data: 'OK' });
-    })
-    .catch((error: any) => {
-      res.status(400).json(error || 'Undefined error');
-    });
-}
+//       res.status(200).json({ data: 'OK' });
+//     })
+//     .catch((error: any) => {
+//       res.status(400).json(error || 'Undefined error');
+//     });
+// }
