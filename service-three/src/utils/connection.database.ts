@@ -1,55 +1,76 @@
 const mysql = require('mysql2/promise');
 
 export class Connection {
-  private connectionStatus: any;
+  private connectionPool: any;
 
   async connect() {
-    if (this.connectionStatus && this.connectionStatus.state !== 'disconnected')
-      return this.connectionStatus;
+    if (this.connectionPool) {
+      return this.connectionPool;
+    }
 
-    let connection;
+    let pool;
     if (process.env.DB_SOCKET_PATH)
-      connection = await mysql.createConnection({
+      pool = await mysql.createPool({
         socketPath: process.env.DB_SOCKET_PATH,
         port: process.env.DB_PORT,
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
-        database: process.env.DB_NAME
+        database: process.env.DB_NAME,
+        max: 15,
+        waitForConnections: true, // Espera se todas as conexões estiverem em uso
+        queueLimit: 0 // Sem limite para a fila de espera
       });
     else
-      connection = await mysql.createConnection({
+      pool = await mysql.createPool({
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
-        database: process.env.DB_NAME
+        database: process.env.DB_NAME,
+        max: 15,
+        waitForConnections: true, 
+        queueLimit: 0 
       });
 
-    await connection.connect((err: any) => {
-      if (err) throw err;
-      this.connectionStatus = connection;
-    });
+    try {
+      const conn = await pool.getConnection();
+      await conn.query('USE service_four;');
+      this.connectionPool = pool;
+      conn.release(); 
+      console.log('Connection Pool established successfully.');
+    } catch (err) {
+      console.error('Failed to establish connection pool:', err);
+      await pool.end();
+      this.connectionPool = undefined;
+      throw err;
+    }
 
-    await connection.query('USE service_three;');
-
-    return connection;
+    return pool;
   }
 
   async query(query: String) {
+    let conn;
     try {
-      const conn = await this.connect();
+      const pool = await this.connect();
+      conn = await pool.getConnection();
       const [rows] = await conn.query(query);
       await conn.end();
       return rows;
     } catch (err: any) {
       throw { error: err, message: err.message, success: false };
+    } finally {
+      if (conn) conn.release();
     }
   }
 
   async transaction(queries: String[]) {
-    const conn = await this.connect();
+    const pool = await this.connect();
+
+    let conn: any;
     try {
+      conn = await pool.getConnection();
       await conn.beginTransaction();
+
       const queryPromises: any[] = [];
 
       queries.forEach((query) => {
@@ -57,15 +78,14 @@ export class Connection {
       });
       const results = await Promise.all(queryPromises);
       await conn.commit();
-      await conn.end();
       return results;
     } catch (err) {
-      await conn.rollback();
-      await conn.end();
+      if (conn) {
+        await conn.rollback();
+      }
       return Promise.reject(err);
+    } finally {
+      if (conn) conn.release();
     }
   }
 }
-
-// declare var module: any;
-// exports = Connection;
