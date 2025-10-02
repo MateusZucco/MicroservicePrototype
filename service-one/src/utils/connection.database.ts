@@ -34,7 +34,7 @@ export class Connection {
 
     try {
       const conn = await pool.getConnection();
-      await conn.query('USE service_four;');
+      await conn.query('USE service_one;');
       this.connectionPool = pool;
       conn.release(); 
       console.log('Connection Pool established successfully.');
