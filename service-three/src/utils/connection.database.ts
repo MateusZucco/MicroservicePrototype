@@ -18,11 +18,11 @@ export class Connection {
       });
     else
       connection = await mysql.createConnection({
-        host: process.env.DB_HOST ||'34.133.191.249',
-        port: process.env.DB_PORT || '3306',
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASS || '/L;xk0qR4YGV3t#?',
-        database: process.env.DB_NAME || 'service_three'
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME
       });
 
     await connection.connect((err: any) => {
@@ -30,7 +30,7 @@ export class Connection {
       this.connectionStatus = connection;
     });
 
-    await connection.query('USE service_three;');
+    await connection.query('USE service_four;');
 
     return connection;
   }

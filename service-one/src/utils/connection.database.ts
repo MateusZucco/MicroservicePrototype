@@ -6,7 +6,7 @@ export class Connection {
   async connect() {
     if (this.connectionStatus && this.connectionStatus.state !== 'disconnected')
       return this.connectionStatus;
-    
+
     let connection;
     if (process.env.DB_SOCKET_PATH)
       connection = await mysql.createConnection({
@@ -30,7 +30,7 @@ export class Connection {
       this.connectionStatus = connection;
     });
 
-    await connection.query('USE service_one;');
+    await connection.query('USE service_four;');
 
     return connection;
   }
