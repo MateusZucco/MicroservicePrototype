@@ -40,7 +40,7 @@ export class Connection {
       console.log('Connection Pool established successfully.');
     } catch (err) {
       console.error('Failed to establish connection pool:', err);
-      await pool.end();
+      await pool.release();
       this.connectionPool = undefined;
       throw err;
     }
