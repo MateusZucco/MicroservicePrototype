@@ -54,7 +54,7 @@ export class Connection {
       const pool = await this.connect();
       conn = await pool.getConnection();
       const [rows] = await conn.query(query);
-      await conn.end();
+      await conn.release();
       return rows;
     } catch (err: any) {
       throw { error: err, message: err.message, success: false };

@@ -5,6 +5,6 @@ import path from 'path';
 const protoObject = protoLoader.loadSync(__dirname + '/usersFour.proto')
 const userProto = grpc.loadPackageDefinition(protoObject).users as any;
 
-const client = new userProto.Users(process.env.SERVICE_FOUR_URL?.toString() || 'localhost:3004', grpc.credentials.createSsl())
+const client = new userProto.Users(process.env.SERVICE_FOUR_URL?.toString() || 'localhost:3004', grpc.credentials.createInsecure())
 
 export default client
