@@ -1,30 +1,45 @@
-import express, {Request} from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import serviceTwo from './model/serviceThree.model';
 
-import router from './routes';
-import morgan from 'morgan';
+const PROTO_PATH = __dirname + '/usersThree.proto';
 
-// Carrega variáveis de ambiente
-dotenv.config();
+const proto = protoLoader.loadSync(PROTO_PATH, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+});
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const userProto = grpc.loadPackageDefinition(proto).users as any;
+const server = new grpc.Server();
 
-morgan.token('body', (req: Request) => JSON.stringify(req.body));
-morgan.token('query', (req: Request) => JSON.stringify(req.query));
-
-// Use o Morgan SEM a opção "immediate: true"
-app.use(
-  morgan(
-    ':date[iso] | :method :url | Status: :status | Tempo: :response-time ms | Tamanho: :res[content-length] B'
-  )
-);
-// Rotas
-app.use(router);
+server.addService(userProto.Users.service, {
+  GetUsers: async (call: any, callback: any) => {
+    try {
+      const users = await serviceTwo.getAll(); 
+      callback(null, { user: users });
+    } catch (error) {
+      callback(error, null);
+    }
+  }
+});
 
 const PORT = process.env.PORT || 3003;
-app.listen(PORT, () => {
-  console.log(`Service Three rodando na porta ${PORT}`);
-});
+
+server.bindAsync(
+  `0.0.0.0:${PORT}`,
+  grpc.ServerCredentials.createInsecure(),
+  (error: any, port: number) => {
+    // 1. Verifique se ocorreu um erro ao vincular a porta
+    if (error) {
+      console.error('Falha ao iniciar o servidor:', error);
+      return;
+    }
+
+    // 2. Se não houve erro, inicie o servidor
+    console.log(`Service Three rodando na porta localhost:${port}`);
+    //   server.start();
+  }
+);
