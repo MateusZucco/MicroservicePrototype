@@ -3,6 +3,8 @@ import * as protoLoader from '@grpc/proto-loader';
 import serviceTwo from './model/serviceTwo.model';
 import GrpcClient from './client';
 
+import { createClient } from 'redis';
+
 const PROTO_PATH = __dirname + '/usersTwo.proto';
 
 const proto = protoLoader.loadSync(PROTO_PATH, {
@@ -16,20 +18,50 @@ const proto = protoLoader.loadSync(PROTO_PATH, {
 const userProto = grpc.loadPackageDefinition(proto).users as any;
 const server = new grpc.Server();
 
+const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
+const startup = async () => {
+  await cacheClient.connect();
+  await cacheClient.FLUSHALL();
+  await cacheClient.FLUSHDB();
+};
+
+startup();
+
 server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
-      const usersTwo = await serviceTwo.getAll();
-      GrpcClient.GetUsers({}, (err: any, response: any) => {
-        if (err) {
-          console.error(err);
-          throw err;
-        }
+      const allUsersFromCache = (await cacheClient.get(
+        'allUsersTwo'
+      )) as string;
+      if (allUsersFromCache) {
+        GrpcClient.GetUsers({}, (err: any, response: any) => {
+          if (err) {
+            console.error(err);
+            throw err;
+          }
 
-        const { user: usersThree } = response;
+          const { user: usersThree } = response;
 
-        callback(null, { user: [...usersTwo, ...usersThree] });
-      });
+          callback(null, {
+            user: [...JSON.parse(allUsersFromCache), , ...usersThree]
+          });
+        });
+      } else {
+        const usersTwo = await serviceTwo.getAll();
+        cacheClient.set('allUsersTwo', JSON.stringify(usersTwo), {
+          expiration: { type: 'EX', value: 10 }
+        });
+        GrpcClient.GetUsers({}, (err: any, response: any) => {
+          if (err) {
+            console.error(err);
+            throw err;
+          }
+
+          const { user: usersThree } = response;
+
+          callback(null, { user: [...usersTwo, ...usersThree] });
+        });
+      }
     } catch (error) {
       callback(error, null);
     }

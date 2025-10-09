@@ -2,6 +2,8 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import serviceFour from './model/serviceFour.model';
 
+import { createClient } from 'redis';
+
 const PROTO_PATH = __dirname + '/usersFour.proto';
 
 const proto = protoLoader.loadSync(PROTO_PATH, {
@@ -15,11 +17,37 @@ const proto = protoLoader.loadSync(PROTO_PATH, {
 const userProto = grpc.loadPackageDefinition(proto).users as any;
 const server = new grpc.Server();
 
+const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
+const startup = async () => {
+  await cacheClient.connect();
+  await cacheClient.FLUSHALL();
+  await cacheClient.FLUSHDB();
+};
+
+startup();
+
 server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
-      const users:any = await serviceFour.getAll(); 
-      callback(null, { user: users[0][0], accessHistoric: users[1][0]  });
+      const allUsersFromCache = (await cacheClient.get(
+        'allUsersFour'
+      )) as string;
+      if (allUsersFromCache) {
+        callback(null, {
+          user: JSON.parse(allUsersFromCache)[0][0],
+          accessHistoric: JSON.parse(allUsersFromCache)[1][0]
+        });
+      } else {
+        const users: any = await serviceFour.getAll();
+        await cacheClient.set(
+          'allUsersFour',
+          JSON.stringify({ user: users[0][0], accessHistoric: users[1][0] }),
+          {
+            expiration: { type: 'EX', value: 30 }
+          }
+        );
+        callback(null, { user: users[0][0], accessHistoric: users[1][0] });
+      }
     } catch (error) {
       callback(error, null);
     }

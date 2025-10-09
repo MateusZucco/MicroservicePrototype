@@ -6,7 +6,7 @@
   "license": "MIT",
   "config": {
     "PROJECT_ID": "standardprototype",
-    "SERVICE_NAME": "service-three-grpc",
+    "SERVICE_NAME": "service-three-grpc-redis",
     "REGION": "us-central1"
   },
   "scripts": {
@@ -17,7 +17,7 @@
     "clean": "tsc --build --clean",
     "gcp-build": "tsc && yarn copy-assets",
     "cloud:build": "gcloud builds submit --tag %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --project %npm_package_config_PROJECT_ID%",
-    "cloud:deploy": "gcloud run deploy %npm_package_config_SERVICE_NAME% --image %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --region %npm_package_config_REGION% --allow-unauthenticated --max-instances 1 --min-instances 0 --timeout=3600 --concurrency 12 --cpu 1 --memory 128Mi --use-http2 --port 3003",
+    "cloud:deploy": "gcloud run deploy %npm_package_config_SERVICE_NAME% --image %npm_package_config_REGION%-docker.pkg.dev/%npm_package_config_PROJECT_ID%/cloud-run-source-deploy/%npm_package_config_SERVICE_NAME% --region %npm_package_config_REGION% --allow-unauthenticated --max-instances 1 --min-instances 0 --timeout=3600 --concurrency 12 --cpu 1 --memory 128Mi --use-http2 --port 3003 --vpc-connector redis-vpc-connector",
     "deploy": "yarn cloud:build && yarn cloud:deploy"
   },
   "keywords": [],
@@ -29,7 +29,8 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "morgan": "^1.10.0",
-    "mysql2": "^3.14.1"
+    "mysql2": "^3.14.1",
+    "redis": "^5.8.3"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
@@ -38,6 +39,7 @@
     "@types/morgan": "^1.9.9",
     "@types/mysql": "^2.15.27",
     "@types/node": "^24.5.2",
+    "@types/redis": "^4.0.11",
     "copyfiles": "^2.4.1",
     "grpc_tools_node_protoc_ts": "^5.3.3",
     "nodemon": "^3.1.10",

@@ -2,6 +2,8 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import serviceTwo from './model/serviceThree.model';
 
+import { createClient } from 'redis';
+
 const PROTO_PATH = __dirname + '/usersThree.proto';
 
 const proto = protoLoader.loadSync(PROTO_PATH, {
@@ -15,11 +17,30 @@ const proto = protoLoader.loadSync(PROTO_PATH, {
 const userProto = grpc.loadPackageDefinition(proto).users as any;
 const server = new grpc.Server();
 
+const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
+const startup = async () => {
+  await cacheClient.connect();
+  await cacheClient.FLUSHALL();
+  await cacheClient.FLUSHDB();
+};
+
+startup();
+
 server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
-      const users = await serviceTwo.getAll(); 
-      callback(null, { user: users });
+      const allUsersFromCache = (await cacheClient.get(
+        'allUsersThree'
+      )) as string;
+      if (allUsersFromCache) {
+        callback(null, { user: JSON.parse(allUsersFromCache) });
+      } else {
+        const users = await serviceTwo.getAll();
+        cacheClient.set('allUsersThree', JSON.stringify(users), {
+          expiration: { type: 'EX', value: 30 }
+        });
+        callback(null, { user: users });
+      }
     } catch (error) {
       callback(error, null);
     }
