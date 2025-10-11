@@ -24,7 +24,7 @@ export async function getDependency(_req: Request, res: Response) {
           if (err) throw err;
           res
             .status(200)
-            .json({ data: [...JSON.parse(allUsersFromCache), , usersTwo] });
+            .json({ data: [...JSON.parse(allUsersFromCache), usersTwo] });
         }
       );
     } else {

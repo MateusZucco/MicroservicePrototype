@@ -43,7 +43,7 @@ server.addService(userProto.Users.service, {
           const { user: usersThree } = response;
 
           callback(null, {
-            user: [...JSON.parse(allUsersFromCache), , ...usersThree]
+            user: [...JSON.parse(allUsersFromCache), ...usersThree]
           });
         });
       } else {
