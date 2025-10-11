@@ -7,6 +7,7 @@ export function getAll(_req: Request, res: Response) {
       res.status(200).json({ data: response });
     })
     .catch((error: any) => {
+            console.error(error);
       res.status(400).json(error || 'Undefined error');
     });
 }

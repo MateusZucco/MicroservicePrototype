@@ -16,6 +16,7 @@ export function getAll(_req: Request, res: Response) {
         });
     })
     .catch((error: any) => {
+            console.error(error);
       res.status(400).json(error || 'Undefined error');
     });
 }
