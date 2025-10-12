@@ -24,7 +24,7 @@ export async function getDependency(_req: Request, res: Response) {
           if (err) throw err;
           res
             .status(200)
-            .json({ data: [...JSON.parse(allUsersFromCache), usersTwo] });
+            .json({ data: [...JSON.parse(allUsersFromCache), ...usersTwo] });
         }
       );
     } else {
@@ -36,7 +36,7 @@ export async function getDependency(_req: Request, res: Response) {
           {},
           (err: any, { user: usersTwo }: { user: Array<{}> }) => {
             if (err) throw err;
-            res.status(200).json({ data: [responseOne, usersTwo] });
+            res.status(200).json({ data: [...responseOne, ...usersTwo] });
           }
         );
       });
@@ -54,7 +54,7 @@ export function getHeavyResponse(_req: Request, res: Response) {
         user,
         accessHistoric
       }: { user: Array<{}>; accessHistoric: Array<{}> } = response;
-      res.status(200).json({ data: { user, accessHistoric } });
+      res.status(200).json({ data: { ...user, ...accessHistoric } });
     });
   } catch (error) {
     res.status(400).json(error || 'Undefined error');
