@@ -1,15 +1,27 @@
 import { Connection } from '../utils/connection.database';
+import cacheClient from '..';
 
 const connection = new Connection();
 
 const getAll = async () => {
   try {
-    const response = await connection.query(`
+    const allUsersFromCache = (await cacheClient.get(
+      'allUsersThree'
+    )) as string;
+    if (allUsersFromCache) {
+      console.log('cache');
+      return JSON.parse(allUsersFromCache);
+    } else {
+      const response = await connection.query(`
          SELECT 
             *
          FROM users 
       `);
-    return response;
+      cacheClient.set('allUsersThree', JSON.stringify(response), {
+            expiration: { type: 'EX', value: 10 }
+          });
+      return response;
+    }
   } catch (err) {
     console.log(err);
     return err;

@@ -19,69 +19,59 @@ const userProto = grpc.loadPackageDefinition(proto).users as any;
 const server = new grpc.Server();
 
 const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
+
+const PORT = process.env.PORT || 3002;
+
 const startup = async () => {
   await cacheClient.connect();
-  await cacheClient.FLUSHALL();
-  await cacheClient.FLUSHDB();
+  server.bindAsync(
+    `0.0.0.0:${PORT}`,
+    grpc.ServerCredentials.createInsecure(),
+    (error: any, port: number) => {
+      if (error) {
+        console.error('Falha ao iniciar o servidor:', error);
+        return;
+      }
+      console.log(`Service Two port ${port}`);
+    }
+  );
 };
-
-startup();
 
 server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
-      const allUsersFromCache = (await cacheClient.get(
-        'allUsersTwo'
-      )) as string;
-      if (allUsersFromCache) {
-        GrpcClient.GetUsers({}, (err: any, response: any) => {
-          if (err) {
-            console.error(err);
-            throw err;
-          }
+      const usersTwo = await serviceTwo.getAll();
 
-          const { user: usersThree } = response;
+      const users: any = [];
+      const callUsers = GrpcClient.GetUsers();
 
-          callback(null, {
-            user: [...JSON.parse(allUsersFromCache), ...usersThree]
-          });
-        });
-      } else {
-        const usersTwo = await serviceTwo.getAll();
-        cacheClient.set('allUsersTwo', JSON.stringify(usersTwo), {
-          expiration: { type: 'EX', value: 10 }
-        });
-        GrpcClient.GetUsers({}, (err: any, response: any) => {
-          if (err) {
-            console.error(err);
-            throw err;
-          }
+      callUsers.on('data', (response: any) => {
+        console.log(response);
 
-          const { user: usersThree } = response;
+        if (response.user) {
+          users.push(response.user);
+        }
+      });
 
-          callback(null, { user: [...usersTwo, ...usersThree] });
-        });
+      callUsers.on('error', (e: any) => {
+        console.error('Erro no stream:', e.details);
+      });
+
+      for (const user of usersTwo) {
+        call.write({ user: user });
       }
+
+      for (const user of users) {
+        call.write({ user: user });
+      }
+
+      call.end();
     } catch (error) {
       callback(error, null);
     }
   }
 });
 
-const PORT = process.env.PORT || 3002;
+startup();
 
-server.bindAsync(
-  `0.0.0.0:${PORT}`,
-  grpc.ServerCredentials.createInsecure(),
-  (error: any, port: number) => {
-    // 1. Verifique se ocorreu um erro ao vincular a porta
-    if (error) {
-      console.error('Falha ao iniciar o servidor:', error);
-      return;
-    }
-
-    // 2. Se não houve erro, inicie o servidor
-    console.log(`Service Two rodando na porta localhost:${port}`);
-    //   server.start();
-  }
-);
+export default cacheClient;

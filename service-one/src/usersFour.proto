@@ -2,47 +2,48 @@ syntax = "proto3";
 
 package users;
 
-import "google/protobuf/empty.proto";
-
 message User {
-    int32 id = 1;
+    uint32 id = 1;
     string first_name = 2;
     string last_name = 3;
     string email = 4;
     string gender = 5;
     string ip_address = 6;
-    string lon = 7;
-    string lat = 8;
+    double lon = 7;
+    double lat = 8;
     string guid = 9;
     string language = 10;
-    int32 best_friend_id = 11;
-    int32 countBestFriends = 12;
+    uint32 best_friend_id = 11;
+    uint32 countBestFriends = 12;
 }
 
 message UserAccessHistoric {
-    int32 id = 1;
+    uint32 id = 1;
     string first_name = 2;
     string last_name = 3;
     string email = 4;
     string gender = 5;
     string ip_address = 6;
-    string lon = 7;
-    string lat = 8;
+    double lon = 7;
+    double lat = 8;
     string guid = 9;
     string language = 10;
-    int32 best_friend_id = 11;
-    int32 user_id = 12;
+    uint32 best_friend_id = 11;
+    uint32 user_id = 12;
     string access_datetime = 13;
     string leave_datetime = 14;
 }
 
 message UsersList {
-    repeated User user = 1;
-    repeated UserAccessHistoric accessHistoric = 2;
+    oneof response_type {
+        User user = 1;
+        UserAccessHistoric accessHistoric = 2;
+    }
 }
 
 message Void {}
 
+
 service Users {
-    rpc GetUsers(Void) returns (UsersList) {}
+    rpc GetUsers(Void) returns (stream UsersList) {}
 }

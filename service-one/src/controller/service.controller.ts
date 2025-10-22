@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import Model from '../model/serviceOne.model';
 import GrpcClientTwo from '../clientTwo';
 import GrpcClientFour from '../clientFour';
-import * as app from '../index';
 
 // export function getSingle(_req: Request, res: Response) {
 //   Model.getAll()
@@ -16,31 +15,27 @@ import * as app from '../index';
 
 export async function getDependency(_req: Request, res: Response) {
   try {
-    const allUsersFromCache = (await app.cacheClient.get('allUsers')) as string;
-    if (allUsersFromCache) {
-      GrpcClientTwo.GetUsers(
-        {},
-        (err: any, { user: usersTwo }: { user: Array<{}> }) => {
-          if (err) throw err;
-          res
-            .status(200)
-            .json({ data: [...JSON.parse(allUsersFromCache), ...usersTwo] });
-        }
-      );
-    } else {
-      Model.getAll().then(async (responseOne: any) => {
-        await app.cacheClient.set('allUsers', JSON.stringify(responseOne), {
-          expiration: { type: 'EX', value: 30 }
-        });
-        GrpcClientTwo.GetUsers(
-          {},
-          (err: any, { user: usersTwo }: { user: Array<{}> }) => {
-            if (err) throw err;
-            res.status(200).json({ data: [...responseOne, ...usersTwo] });
-          }
-        );
-      });
-    }
+    const responseOne = await Model.getAll();
+
+    const users: any = [];
+    const callUsers = GrpcClientTwo.GetUsers();
+
+    callUsers.on('data', (response: any) => {
+      console.log(response);
+
+      if (response.user) {
+        users.push(response.user);
+      }
+    });
+
+    callUsers.on('error', (e: any) => {
+      console.error('Erro no stream:', e.details);
+    });
+
+    callUsers.on('end', () => {
+      res.status(200).json({ data: [...responseOne, ...users] });
+    });
+
   } catch (error) {
     res.status(400).json(error || 'Undefined error');
   }
@@ -48,26 +43,30 @@ export async function getDependency(_req: Request, res: Response) {
 
 export function getHeavyResponse(_req: Request, res: Response) {
   try {
-    GrpcClientFour.GetUsers({}, (err: any, response: any) => {
-      if (err) throw err;
-      const {
-        user,
-        accessHistoric
-      }: { user: Array<{}>; accessHistoric: Array<{}> } = response;
-      res.status(200).json({ data: { ...user, ...accessHistoric } });
+    let users: Array<{}> = [];
+    let accessHistoric: Array<{}> = [];
+    const callUsers = GrpcClientFour.GetUsers();
+
+    callUsers.on('data', (response: any) => {
+      console.log(response);
+
+      if (response.user) {
+        users.push(response.user);
+      } else if (response.accessHistoric) {
+        accessHistoric.push(response.accessHistoric);
+      }
+    });
+
+    callUsers.on('error', (e: any) => {
+      console.error('Erro no stream:', e.details);
+    });
+
+    callUsers.on('end', () => {
+      res.status(200).json({ data: { users, accessHistoric } });
     });
   } catch (error) {
+    console.error(error);
+
     res.status(400).json(error || 'Undefined error');
   }
 }
-
-// export function testStressSimulate(_req: Request, res: Response) {
-//   serviceFive
-//     .simulateStress()
-//     .then((ress) => {
-//       res.status(200).json({ data: 'OK' });
-//     })
-//     .catch((error: any) => {
-//       res.status(400).json(error || 'Undefined error');
-//     });
-// }

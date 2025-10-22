@@ -33,10 +33,10 @@ const PORT = process.env.PORT || 3001;
 const cacheClient = createClient({ url: 'redis://10.223.129.83:6379' });
 const startup = async () => {
   await cacheClient.connect();
-  await cacheClient.FLUSHALL();
-  await cacheClient.FLUSHDB();
+  // await cacheClient.FLUSHALL();
+  // await cacheClient.FLUSHDB();
   app.listen(PORT, () => {
-    console.log(`Service One rodando na porta ${PORT}`);
+    console.log(`Service One port ${PORT}`);
   });
 };
 
