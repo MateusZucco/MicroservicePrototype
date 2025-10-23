@@ -18,8 +18,17 @@ const server = new grpc.Server();
 server.addService(userProto.Users.service, {
   GetUsers: async (call: any, callback: any) => {
     try {
-      const users:any = await serviceFour.getAll(); 
-      callback(null, { user: users[0][0], accessHistoric: users[1][0]  });
+      const response: any = await serviceFour.getAll();
+
+      for (const user of response[0][0]) {
+        call.write({ user: user });
+      }
+
+      for (const historic of response[1][0]) {
+        call.write({ accessHistoric: historic });
+      }
+
+      call.end();
     } catch (error) {
       callback(error, null);
     }
