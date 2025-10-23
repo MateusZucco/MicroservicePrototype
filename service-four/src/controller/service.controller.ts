@@ -8,7 +8,6 @@ export async function getAll(_req: Request, res: Response) {
       res
         .status(200)
         .json({
-          cache: false,
           data: { user: response.user, accessHistoric: response.accessHistoric }
         });
     })
