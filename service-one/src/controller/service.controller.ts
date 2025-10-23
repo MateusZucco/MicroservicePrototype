@@ -39,7 +39,7 @@ export function getHeavyResponse(_req: Request, res: Response) {
   serviceFour
     .getAll()
     .then((response: any) => {
-      res.status(200).json({ data: response.data });
+      res.status(200).json({ data: response.data.data });
     })
     .catch((error: any) => {
       res.status(400).json(error || 'Undefined error');
