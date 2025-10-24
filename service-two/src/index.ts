@@ -42,14 +42,15 @@ server.addService(userProto.Users.service, {
     try {
       const usersTwo = await serviceTwo.getAll();
 
-      const users: any = [];
+      for (const user of usersTwo) {
+        call.write({ user: user });
+      }
+
       const callUsers = GrpcClient.GetUsers();
 
       callUsers.on('data', (response: any) => {
-        console.log(response);
-
         if (response.user) {
-          users.push(response.user);
+          call.write({ user: response.user });
         }
       });
 
@@ -57,16 +58,12 @@ server.addService(userProto.Users.service, {
         console.error('Erro no stream:', e.details);
       });
 
-      for (const user of usersTwo) {
-        call.write({ user: user });
-      }
-
-      for (const user of users) {
-        call.write({ user: user });
-      }
-
-      call.end();
+      callUsers.on('end', () => {
+        call.end();
+      });
     } catch (error) {
+      console.error(error);
+      
       callback(error, null);
     }
   }

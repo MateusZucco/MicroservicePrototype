@@ -21,8 +21,6 @@ export async function getDependency(_req: Request, res: Response) {
     const callUsers = GrpcClientTwo.GetUsers();
 
     callUsers.on('data', (response: any) => {
-      console.log(response);
-
       if (response.user) {
         users.push(response.user);
       }
@@ -31,11 +29,10 @@ export async function getDependency(_req: Request, res: Response) {
     callUsers.on('error', (e: any) => {
       console.error('Erro no stream:', e.details);
     });
-
+    
     callUsers.on('end', () => {
       res.status(200).json({ data: [...responseOne, ...users] });
     });
-
   } catch (error) {
     res.status(400).json(error || 'Undefined error');
   }
@@ -48,8 +45,6 @@ export function getHeavyResponse(_req: Request, res: Response) {
     const callUsers = GrpcClientFour.GetUsers();
 
     callUsers.on('data', (response: any) => {
-      console.log(response);
-
       if (response.user) {
         users.push(response.user);
       } else if (response.accessHistoric) {

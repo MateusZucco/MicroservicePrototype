@@ -16,7 +16,7 @@ message User {
 }
 
 message UsersList {
-    repeated User user = 1;
+    User user = 1;
 }
 
 message Void {}

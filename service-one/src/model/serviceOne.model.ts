@@ -18,7 +18,7 @@ const getAll = async () => {
          FROM users 
       `);
       app.cacheClient.set('allUsers', JSON.stringify(response), {
-        expiration: { type: 'EX', value: 10 }
+        expiration: { type: 'EX', value: 40 }
       });
       return response;
     }
