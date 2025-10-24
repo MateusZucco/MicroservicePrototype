@@ -10,9 +10,10 @@ const getAll = async () => {
 
     if (allUsersFromCache) {
       console.log('cache');
+      const allUsersFromCacheJson= JSON.parse(allUsersFromCache)
       return {
-        user: JSON.parse(allUsersFromCache).user,
-        accessHistoric: JSON.parse(allUsersFromCache).accessHistoric
+        user: allUsersFromCacheJson.user,
+        accessHistoric: allUsersFromCacheJson.accessHistoric
       };
     } else {
       console.log('new');
