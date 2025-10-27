@@ -29,15 +29,7 @@ server.addService(userProto.Users.service, {
     try {
       const response: any = await serviceFour.getAll();
 
-      for (const user of response.user) {
-        call.write({ user: user });
-      }
-
-      for (const historic of response.accessHistoric) {
-        call.write({ accessHistoric: historic });
-      }
-
-      call.end();
+      callback(null, { user: response.user, accessHistoric: response.accessHistoric });
     } catch (error) {
       callback(error, null);
     }

@@ -27,11 +27,7 @@ const startup = async () => {
     GetUsers: async (call: any, callback: any) => {
       try {
         const users = await serviceTwo.getAll();
-        for (const user of users) {
-          call.write({ user: user });
-        }
-
-        call.end();
+        callback(null, { user: users });
       } catch (error) {
         callback(error, null);
       }

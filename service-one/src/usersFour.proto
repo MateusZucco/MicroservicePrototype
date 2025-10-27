@@ -8,7 +8,7 @@ message User {
     string last_name = 3;
     string email = 4;
     string gender = 5;
-    string ip_address = 6;
+    uint32 ip_address = 6;
     double lon = 7;
     double lat = 8;
     string guid = 9;
@@ -23,7 +23,7 @@ message UserAccessHistoric {
     string last_name = 3;
     string email = 4;
     string gender = 5;
-    string ip_address = 6;
+    uint32 ip_address = 6;
     double lon = 7;
     double lat = 8;
     string guid = 9;
@@ -35,15 +35,12 @@ message UserAccessHistoric {
 }
 
 message UsersList {
-    oneof response_type {
-        User user = 1;
-        UserAccessHistoric accessHistoric = 2;
-    }
+    repeated User user = 1;
+    repeated UserAccessHistoric accessHistoric = 2;
 }
 
 message Void {}
 
-
 service Users {
-    rpc GetUsers(Void) returns (stream UsersList) {}
+    rpc GetUsers(Void) returns (UsersList) {}
 }

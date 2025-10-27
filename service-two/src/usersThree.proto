@@ -16,11 +16,11 @@ message User {
 }
 
 message UsersList {
-    User user = 1;
+    repeated User user = 1;
 }
 
 message Void {}
 
 service Users {
-    rpc GetUsers(Void) returns (stream UsersList) {}
+    rpc GetUsers(Void) returns (UsersList) {}
 }

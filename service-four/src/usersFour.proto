@@ -35,14 +35,12 @@ message UserAccessHistoric {
 }
 
 message UsersList {
-    oneof response_type {
-        User user = 1;
-        UserAccessHistoric accessHistoric = 2;
-    }
+    repeated User user = 1;
+    repeated UserAccessHistoric accessHistoric = 2;
 }
 
 message Void {}
 
 service Users {
-    rpc GetUsers(Void) returns (stream UsersList) {}
+    rpc GetUsers(Void) returns (UsersList) {}
 }

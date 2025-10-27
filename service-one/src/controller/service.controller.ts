@@ -17,22 +17,13 @@ export async function getDependency(_req: Request, res: Response) {
   try {
     const responseOne = await Model.getAll();
 
-    const users: any = [];
-    const callUsers = GrpcClientTwo.GetUsers();
-
-    callUsers.on('data', (response: any) => {
-      if (response.user) {
-        users.push(response.user);
+    GrpcClientTwo.GetUsers(
+      {},
+      (err: any, { user: usersTwo }: { user: Array<{}> }) => {
+        if (err) throw err;
+        res.status(200).json({ data: [...responseOne, ...usersTwo] });
       }
-    });
-
-    callUsers.on('error', (e: any) => {
-      console.error('Erro no stream:', e.details);
-    });
-    
-    callUsers.on('end', () => {
-      res.status(200).json({ data: [...responseOne, ...users] });
-    });
+    );
   } catch (error) {
     res.status(400).json(error || 'Undefined error');
   }
@@ -40,24 +31,13 @@ export async function getDependency(_req: Request, res: Response) {
 
 export function getHeavyResponse(_req: Request, res: Response) {
   try {
-    let users: Array<{}> = [];
-    let accessHistoric: Array<{}> = [];
-    const callUsers = GrpcClientFour.GetUsers();
-
-    callUsers.on('data', (response: any) => {
-      if (response.user) {
-        users.push(response.user);
-      } else if (response.accessHistoric) {
-        accessHistoric.push(response.accessHistoric);
-      }
-    });
-
-    callUsers.on('error', (e: any) => {
-      console.error('Erro no stream:', e.details);
-    });
-
-    callUsers.on('end', () => {
-      res.status(200).json({ data: { users, accessHistoric } });
+    GrpcClientFour.GetUsers({}, (err: any, response: any) => {
+      if (err) throw err;
+      const {
+        user,
+        accessHistoric
+      }: { user: Array<{}>; accessHistoric: Array<{}> } = response;
+      res.status(200).json({ data: { user, accessHistoric } });
     });
   } catch (error) {
     console.error(error);
