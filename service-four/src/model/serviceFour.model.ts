@@ -46,7 +46,7 @@ const getAll = async () => {
         'allUsersFour',
         JSON.stringify({ user: result[0][0], accessHistoric: result[1][0] }),
         {
-          expiration: { type: 'EX', value: 40 }
+          expiration: { type: 'EX', value: 10 }
         }
       );
 
